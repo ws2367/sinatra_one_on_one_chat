@@ -1,0 +1,53 @@
+<style>
+/* #Orange Flat Button
+==================================================*/
+.orange-flat-button {
+  position: relative;
+  vertical-align: top;
+  width: 100%;
+  height: 60px;
+  padding: 0;
+  font-size: 22px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  background: #f39c12;
+  border: 0;
+  border-bottom: 2px solid #e8930c;
+  cursor: pointer;
+  -webkit-box-shadow: inset 0 -2px #e8930c;
+  box-shadow: inset 0 -2px #e8930c;
+}
+.orange-flat-button:active {
+  top: 1px;
+  outline: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+</style>
+
+
+<form action='/chat' method='post'>
+  <% puts Notifications.inspect
+  Users.each do |name|
+       next if name == session[:user]
+       key = [session[:user], name]
+    %>
+    <input class="orange-flat-button" type='submit' name="receiver" value="<%=name%>"/><span id="notif_<%=name%>"><%=Notifications[key].to_s%></span>
+  <%end%>
+</form>
+
+<script>
+// reading
+  var ems = new EventSource('/notif');
+  ems.onmessage = function(e) {
+    console.log(e);
+    var arr = e.data.split(',');
+    if ( arr[0] == "<%=session[:user]%>" ) {
+      if ( $('#notif_' + arr[1]).length != 0 ) {
+        $('#notif_' + arr[1]).html(arr[2]);
+      }
+    }
+  };
+
+</script>
